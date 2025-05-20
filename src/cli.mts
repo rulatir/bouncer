@@ -11,6 +11,7 @@ program
     .description('Bounce a Node project to a self-contained deployable directory')
     .option('--source <path>', 'Source project directory (default: current working dir)', process.cwd())
     .option('--dest <path>', 'Destination bounce directory (default: ./bounce)', 'bounce')
+    .option('--strategy <name>', 'Strategy to use (all, files, or git)') // Added strategy option
     .parse(process.argv);
 
 const opts = program.opts();
@@ -20,4 +21,4 @@ const resolvePath = (p: string) => path.isAbsolute(p) ? p : path.resolve(process
 const sourceDir = resolvePath(opts.source);
 const destDir = resolvePath(opts.dest);
 
-await main({ sourceDir, destDir });
+await main({ sourceDir, destDir, strategy: opts.strategy });

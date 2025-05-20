@@ -2,12 +2,16 @@
 
 import path from 'node:path';
 import { determineStrategy, StrategyKey } from './strategy/index.mjs';
+import { promisify } from 'node:util';
+import {exec} from 'child_process';
 
 export interface BounceOptions {
     sourceDir: string;
     destDir: string;
     strategy?: StrategyKey
 }
+
+const execAsync = promisify(exec);
 
 export async function main({ sourceDir, destDir, strategy: preferredStrategy }: BounceOptions): Promise<void> {
     console.log(`🔄 Bouncing from: ${sourceDir}`);
@@ -22,6 +26,7 @@ export async function main({ sourceDir, destDir, strategy: preferredStrategy }: 
 
     const strategy = await determineStrategy(srcAbs, { strategy: preferredStrategy });
     await strategy.performBounce({ sourceDir: srcAbs, destDir: destAbs });
+    await execAsync('pnpm install --prod --frozen-lockfile', { cwd: destAbs });
 
     console.log(`✅ Bounce completed using strategy "${strategy.name}".`);
 }
