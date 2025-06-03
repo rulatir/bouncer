@@ -9,14 +9,14 @@ export default {
     name: 'all',
 
     // This strategy is always available
-    check: async (sourceDir: string) : Promise<boolean> => true,
+    async check(sourceDir: string) : Promise<boolean> { return true; },
 
-    performBounce: async ({ sourceDir, destDir }: BounceOptions): Promise<void> => {
+    async performBounce({ sourceDir, destDir }: BounceOptions): Promise<void> {
         // Include everything except standard exclusions
         const exclusions = buildStandardExclusions(sourceDir, destDir);
         const selectionRules = ['**', ...exclusions];
 
         const files = await resolveMatchingFiles(selectionRules, sourceDir);
-        await performStandardCopy({ sourceDir, destDir, files });
+        this.files = await performStandardCopy({ sourceDir, destDir, files });
     }
 } satisfies Strategy;

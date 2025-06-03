@@ -9,6 +9,7 @@ export async function performStandardCopy({ sourceDir, destDir, files }) {
         'package.json',
         'pnpm-lock.yaml'
     ]);
+    const result = [];
     for (const file of fileSet) {
         const srcPath = path.join(sourceDir, file);
         const destPath = path.join(destDir, file);
@@ -18,6 +19,7 @@ export async function performStandardCopy({ sourceDir, destDir, files }) {
                 await mkdirp(destPath);
             }
             else {
+                result.push(destPath);
                 await mkdirp(path.dirname(destPath));
                 await fs.copyFile(srcPath, destPath);
             }
@@ -26,6 +28,7 @@ export async function performStandardCopy({ sourceDir, destDir, files }) {
             // Skip if file doesn't exist (e.g., pnpm-lock.yaml)
         }
     }
+    return result;
 }
 export function excludeNestedTarget(sourceDir, destDir) {
     const sourceAbs = path.resolve(sourceDir);

@@ -4,16 +4,19 @@ import path from 'node:path';
 import { determineStrategy, StrategyKey } from './strategy/index.mjs';
 import { promisify } from 'node:util';
 import {exec} from 'child_process';
+import { $ as ZX } from 'zx';
+import fs from 'node:fs';
 
 export interface BounceOptions {
     sourceDir: string;
     destDir: string;
-    strategy?: StrategyKey
+    strategy?: StrategyKey;
+    witness?: string;
 }
 
 const execAsync = promisify(exec);
 
-export async function main({ sourceDir, destDir, strategy: preferredStrategy }: BounceOptions): Promise<void> {
+export async function main({ sourceDir, destDir, strategy: preferredStrategy, witness }: BounceOptions): Promise<void> {
     console.log(`🔄 Bouncing from: ${sourceDir}`);
     console.log(`📦 To: ${destDir}`);
 
@@ -27,6 +30,13 @@ export async function main({ sourceDir, destDir, strategy: preferredStrategy }: 
     const strategy = await determineStrategy(srcAbs, { strategy: preferredStrategy });
     await strategy.performBounce({ sourceDir: srcAbs, destDir: destAbs });
     await execAsync('pnpm install --prod --frozen-lockfile', { cwd: destAbs });
+    if (strategy.files && witness) {
+        const sortedFiles = [...strategy.files].sort();
+        const child = ZX`md5state - | md5sum -`;
+        child.stdin.write(sortedFiles.join('\n') + '\n');
+        child.stdin.end();
+        fs.writeFileSync(path.resolve(destAbs, witness), (await child).stdout.toString(), 'utf8');
+    }
 
     console.log(`✅ Bounce completed using strategy "${strategy.name}".`);
 }

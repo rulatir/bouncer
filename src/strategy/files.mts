@@ -9,7 +9,7 @@ export default {
     name: 'files',
 
     // Check if the 'files' field exists in package.json
-    check: async (sourceDir: string): Promise<boolean> => {
+    async check (sourceDir: string): Promise<boolean> {
         try {
             const pkg = await readPackageJson(sourceDir);
             return Array.isArray(pkg.files) && pkg.files.length > 0;
@@ -18,7 +18,7 @@ export default {
         }
     },
 
-    performBounce: async ({ sourceDir, destDir }: BounceOptions): Promise<void> => {
+    async performBounce({ sourceDir, destDir }: BounceOptions): Promise<void> {
         const pkg = await readPackageJson(sourceDir);
 
         if (!Array.isArray(pkg.files) || pkg.files.length === 0) {
@@ -29,6 +29,6 @@ export default {
         const selectionRules = [...pkg.files, ...exclusions];
 
         const files = await resolveMatchingFiles(selectionRules, sourceDir);
-        await performStandardCopy({ sourceDir, destDir, files });
+        this.files = await performStandardCopy({ sourceDir, destDir, files });
     }
 } satisfies Strategy;

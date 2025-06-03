@@ -4,12 +4,12 @@ import { buildStandardExclusions, resolveMatchingFiles } from '../util/fileSelec
 export default {
     name: 'all',
     // This strategy is always available
-    check: async (sourceDir) => true,
-    performBounce: async ({ sourceDir, destDir }) => {
+    async check(sourceDir) { return true; },
+    async performBounce({ sourceDir, destDir }) {
         // Include everything except standard exclusions
         const exclusions = buildStandardExclusions(sourceDir, destDir);
         const selectionRules = ['**', ...exclusions];
         const files = await resolveMatchingFiles(selectionRules, sourceDir);
-        await performStandardCopy({ sourceDir, destDir, files });
+        this.files = await performStandardCopy({ sourceDir, destDir, files });
     }
 };

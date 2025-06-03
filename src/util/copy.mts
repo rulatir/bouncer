@@ -10,7 +10,7 @@ interface CopyContext {
     files: string[];
 }
 
-export async function performStandardCopy({ sourceDir, destDir, files }: CopyContext): Promise<void> {
+export async function performStandardCopy({ sourceDir, destDir, files }: CopyContext): Promise<string[]> {
     await mkdirp(destDir);
 
     const fileSet = new Set([
@@ -18,6 +18,8 @@ export async function performStandardCopy({ sourceDir, destDir, files }: CopyCon
         'package.json',
         'pnpm-lock.yaml'
     ]);
+
+    const result = [];
 
     for (const file of fileSet) {
         const srcPath = path.join(sourceDir, file);
@@ -28,6 +30,7 @@ export async function performStandardCopy({ sourceDir, destDir, files }: CopyCon
             if (stat.isDirectory()) {
                 await mkdirp(destPath);
             } else {
+                result.push(destPath);
                 await mkdirp(path.dirname(destPath));
                 await fs.copyFile(srcPath, destPath);
             }
@@ -35,6 +38,7 @@ export async function performStandardCopy({ sourceDir, destDir, files }: CopyCon
             // Skip if file doesn't exist (e.g., pnpm-lock.yaml)
         }
     }
+    return result;
 }
 
 export function excludeNestedTarget(sourceDir: string, destDir: string): string[] {

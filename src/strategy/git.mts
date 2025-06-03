@@ -13,7 +13,7 @@ export default {
     name: 'git',
 
     // Check if the directory is inside a Git repository
-    check: async (sourceDir: string): Promise<boolean> => {
+    async check(sourceDir: string): Promise<boolean> {
         try {
             await execAsync('git rev-parse --is-inside-work-tree', { cwd: sourceDir });
             return true;
@@ -22,7 +22,7 @@ export default {
         }
     },
 
-    performBounce: async ({ sourceDir, destDir }: BounceOptions): Promise<void> => {
+    async performBounce ({ sourceDir, destDir }: BounceOptions): Promise<void> {
         try {
             // Find the Git repository root
             const { stdout: rootDir } = await execAsync('git rev-parse --show-toplevel', { cwd: sourceDir });
@@ -55,8 +55,7 @@ export default {
             // Include essential files even if not tracked by Git
             const essentialFiles = ['package.json', 'pnpm-lock.yaml'];
             const files = [...new Set([...gitFiles, ...essentialFiles])];
-
-            await performStandardCopy({ sourceDir, destDir, files });
+            this.files = await performStandardCopy({ sourceDir, destDir, files });
         } catch (error) {
             const errorMessage = error instanceof Error
                 ? error.message

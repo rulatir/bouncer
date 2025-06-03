@@ -11,6 +11,7 @@ export type Strategy = {
     name: StrategyKey;
     check: (sourceDir: string) => Promise<boolean>;
     performBounce: (options: BounceOptions) => Promise<void>;
+    files?: string[];
 };
 
 const strategies = {
