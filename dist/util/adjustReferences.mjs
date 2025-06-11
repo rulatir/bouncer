@@ -21,8 +21,9 @@ function handlePathWithProtocol(from, to, pathStr, requireProtocol = true) {
     }
 }
 function K(from, to, [key, value], requireProtocol = true) {
-    const [pkg, version] = key.split("@", 2);
-    return [`${pkg}@${handlePathWithProtocol(from, to, version, requireProtocol)}`, value];
+    const chunks = key.split("@");
+    chunks[chunks.length - 1] = handlePathWithProtocol(from, to, chunks[chunks.length - 1], requireProtocol);
+    return [chunks.join('@'), value];
 }
 K.noproto = function (from, to, [key, value]) {
     return K(from, to, [key, value], false);
