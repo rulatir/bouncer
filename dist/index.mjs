@@ -5,6 +5,7 @@ import { promisify } from 'node:util';
 import { exec } from 'child_process';
 import { $ as ZX } from 'zx';
 import fs from 'node:fs';
+import { adjustReferences } from './util/adjustReferences.mjs';
 const execAsync = promisify(exec);
 export async function main({ sourceDir, destDir, strategy: preferredStrategy, witness }) {
     console.log(`🔄 Bouncing from: ${sourceDir}`);
@@ -16,7 +17,8 @@ export async function main({ sourceDir, destDir, strategy: preferredStrategy, wi
     }
     const strategy = await determineStrategy(srcAbs, { strategy: preferredStrategy });
     await strategy.performBounce({ sourceDir: srcAbs, destDir: destAbs });
-    await execAsync('pnpm install --prod --frozen-lockfile', { cwd: destAbs });
+    await adjustReferences(srcAbs, destAbs);
+    await execAsync('pnpm install --prod --frozen-lockfile --config.node-linker=hoisted --shamefully-hoist', { cwd: destAbs });
     if (strategy.files && witness) {
         const sortedFiles = [...strategy.files].sort();
         const child = ZX `md5state - | md5sum -`;
