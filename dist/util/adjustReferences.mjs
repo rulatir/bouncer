@@ -7,11 +7,11 @@ function rebasePath(from, to, specifier) {
         : path.relative(to, path.resolve(from, specifier));
 }
 // Common helper to handle path rebasing with protocol support
-function handlePathWithProtocol(from, to, pathStr) {
+function handlePathWithProtocol(from, to, pathStr, requireProtocol = true) {
     const parts = pathStr.split(":");
     switch (parts.length) {
         case 1:
-            return rebasePath(from, to, pathStr);
+            return requireProtocol ? pathStr : rebasePath(from, to, pathStr);
         case 2:
             return parts[0] === "file"
                 ? `file:${rebasePath(from, to, parts[1])}`
@@ -21,7 +21,8 @@ function handlePathWithProtocol(from, to, pathStr) {
     }
 }
 function K(from, to, [key, value]) {
-    return [handlePathWithProtocol(from, to, key), value];
+    const [pkg, version] = key.split("@", 2);
+    return [`${pkg}@${handlePathWithProtocol(from, to, version)}`, value];
 }
 function P(from, to, [key, value]) {
     return [key, handlePathWithProtocol(from, to, value)];
