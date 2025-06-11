@@ -32,7 +32,10 @@ const lockRules = {
         "*": P
     },
     dependencies: {
-        "*": P,
+        "*": P
+    },
+    snapshots: {
+        "*": K
     },
     packages: {
         "*": [
