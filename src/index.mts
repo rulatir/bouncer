@@ -6,7 +6,7 @@ import { promisify } from 'node:util';
 import {exec} from 'child_process';
 import { $ as ZX } from 'zx';
 import fs from 'node:fs';
-import adjustReferences from./util/adjustReferences.mjs";
+import { adjustReferences } from './util/adjustReferences.mjs';
 
 export interface BounceOptions {
     sourceDir: string;
