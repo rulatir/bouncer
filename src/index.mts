@@ -32,6 +32,7 @@ export async function main({ sourceDir, destDir, strategy: preferredStrategy, wi
     await strategy.performBounce({ sourceDir: srcAbs, destDir: destAbs });
     await adjustReferences(srcAbs, destAbs);
     await execAsync('pnpm install --prod --frozen-lockfile --config.node-linker=hoisted --shamefully-hoist', { cwd: destAbs });
+
     if (strategy.files && witness) {
         const sortedFiles = [...strategy.files].sort();
         const child = ZX`md5state - | md5sum -`;
