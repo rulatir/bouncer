@@ -24,16 +24,38 @@ function handlePathWithProtocol(from: string, to: string, pathStr: string, requi
     }
 }
 
-function K(from: string, to: string, [key, value]: [string, any]): [string, any] {
+function K(from: string, to: string, [key, value]: [string, any], requireProtocol: boolean=true): [string, any] {
     const [pkg,version] = key.split("@", 2);
-    return [`${pkg}@${handlePathWithProtocol(from, to, version)}`, value];
+    return [`${pkg}@${handlePathWithProtocol(from, to, version, requireProtocol)}`, value];
+}
+K.noproto = function(from: string, to: string, [key, value]: [string, any]): [string, any] {
+    return K(from, to, [key, value], false);
 }
 
-function P(from: string, to: string, [key, value]: [string, any]): [string, any] {
-    return [key, handlePathWithProtocol(from, to, value)];
+function P(from: string, to: string, [key, value]: [string, any], requireProtocol: boolean=true): [string, any] {
+    return [key, handlePathWithProtocol(from, to, value, requireProtocol)];
+}
+P.noproto = function(from: string, to: string, [key, value]: [string, any]): [string, any] {
+    return P(from, to, [key, value], false);
 }
 
 const lockRules = {
+    importers: {
+        ".": {
+            dependencies: {
+                "*": {
+                    specifier: P,
+                    version: P
+                }
+            },
+            devDependencies: {
+                "*": {
+                    specifier: P,
+                    version: P
+                }
+            }
+        }
+    },
     specifiers: {
         "*": P
     },
@@ -48,7 +70,7 @@ const lockRules = {
             K,
             {
                 resolution: {
-                    directory: P
+                    directory: P.noproto
                 }
             }
         ]
