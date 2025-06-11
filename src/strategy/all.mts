@@ -2,7 +2,7 @@
 
 import { performStandardCopy } from '../util/copy.mjs';
 import { buildStandardExclusions, resolveMatchingFiles } from '../util/fileSelection.mjs';
-import type { BounceOptions } from '../index.mjs';
+import type { BounceOptions } from '../commands/bounce.mjs';
 import {Strategy} from "./index.mjs";
 
 export default {

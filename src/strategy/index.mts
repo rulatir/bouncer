@@ -3,7 +3,7 @@ import { readPackageJson } from '../util/fileSelection.mjs';
 import allStrategy from './all.mjs';
 import filesStrategy from './files.mjs';
 import gitStrategy from './git.mjs';
-import { BounceOptions } from '../index.mjs';
+import { BounceOptions } from '../commands/bounce.mjs';
 
 export type StrategyKey = 'all' | 'files' | 'git';
 

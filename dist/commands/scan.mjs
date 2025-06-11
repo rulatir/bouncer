@@ -1,0 +1,10 @@
+import Arborist from '@npmcli/arborist';
+import packlist from 'npm-packlist';
+export async function scan(destinationDir) {
+    const arborist = new Arborist({ path: destinationDir });
+    const tree = await arborist.loadVirtual();
+    const files = await packlist(tree);
+    for (const file of files) {
+        console.log(`--input ${destinationDir}/${file}`);
+    }
+}

@@ -1,12 +1,12 @@
 // src/index.mts
 
 import path from 'node:path';
-import { determineStrategy, StrategyKey } from './strategy/index.mjs';
+import { determineStrategy, StrategyKey } from '../strategy/index.mjs';
 import { promisify } from 'node:util';
 import {exec} from 'child_process';
 import { $ as ZX } from 'zx';
 import fs from 'node:fs';
-import { adjustReferences } from './util/adjustReferences.mjs';
+import { adjustReferences } from '../util/adjustReferences.mjs';
 
 export interface BounceOptions {
     sourceDir: string;
@@ -17,7 +17,7 @@ export interface BounceOptions {
 
 const execAsync = promisify(exec);
 
-export async function main({ sourceDir, destDir, strategy: preferredStrategy, witness }: BounceOptions): Promise<void> {
+export async function bounce({ sourceDir, destDir, strategy: preferredStrategy, witness }: BounceOptions): Promise<void> {
     console.log(`🔄 Bouncing from: ${sourceDir}`);
     console.log(`📦 To: ${destDir}`);
 

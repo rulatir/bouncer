@@ -4,7 +4,7 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'node:path';
 import { performStandardCopy } from '../util/copy.mjs';
-import type { BounceOptions } from '../index.mjs';
+import type { BounceOptions } from '../commands/bounce.mjs';
 import { Strategy } from './index.mjs';
 
 const execAsync = promisify(exec);
