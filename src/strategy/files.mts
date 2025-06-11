@@ -18,7 +18,7 @@ export default {
         }
     },
 
-    async performBounce({ sourceDir, destDir }: BounceOptions): Promise<void> {
+    async collectFiles(sourceDir: string, destDir?: string): Promise<string[]> {
         const pkg = await readPackageJson(sourceDir);
 
         if (!Array.isArray(pkg.files) || pkg.files.length === 0) {
@@ -28,7 +28,19 @@ export default {
         const exclusions = buildStandardExclusions(sourceDir, destDir);
         const selectionRules = [...pkg.files, ...exclusions];
 
-        const files = await resolveMatchingFiles(selectionRules, sourceDir);
-        this.files = await performStandardCopy({ sourceDir, destDir, files });
+        return await resolveMatchingFiles(selectionRules, sourceDir);
+    },
+
+    async performBounce({ sourceDir, destDir }: BounceOptions): Promise<void> {
+
+        this.files = await performStandardCopy({
+            sourceDir, destDir,
+            files: await this.collectFiles(sourceDir, destDir)
+        });
+    },
+
+    async performScan(bouncedDir: string): Promise<void> {
+        console.log((await this.collectFiles(bouncedDir)).map(_ => `--input ${_}`).join("\n"));
     }
+
 } satisfies Strategy;

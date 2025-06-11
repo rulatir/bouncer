@@ -16,37 +16,41 @@ export default {
             return false;
         }
     },
+    async collectFiles(sourceDir, destDir) {
+        const { stdout: rootDir } = await execAsync('git rev-parse --show-toplevel', { cwd: sourceDir });
+        const gitRepoRoot = rootDir.trim();
+        // Get all files tracked by Git
+        const { stdout } = await execAsync('git ls-files', { cwd: sourceDir });
+        const allGitFiles = stdout.trim().split('\n').filter(Boolean);
+        // Convert source directory to absolute path
+        const sourceDirAbs = path.resolve(sourceDir);
+        // Calculate source directory's path relative to git root
+        const relativeSourceDir = path.relative(gitRepoRoot, sourceDirAbs);
+        const relativeSourceDirWithSep = relativeSourceDir ? `${relativeSourceDir}${path.sep}` : '';
+        // Filter files to only those within the source directory
+        const gitFiles = allGitFiles
+            .filter(file => {
+            if (!relativeSourceDir)
+                return true;
+            return file.startsWith(relativeSourceDirWithSep);
+        })
+            .map(file => {
+            if (!relativeSourceDir)
+                return file;
+            return file.startsWith(relativeSourceDirWithSep)
+                ? file.slice(relativeSourceDirWithSep.length)
+                : file;
+        });
+        // Include essential files even if not tracked by Git
+        const essentialFiles = ['package.json', 'pnpm-lock.yaml'];
+        return [...new Set([...gitFiles, ...essentialFiles])];
+    },
     async performBounce({ sourceDir, destDir }) {
         try {
-            // Find the Git repository root
-            const { stdout: rootDir } = await execAsync('git rev-parse --show-toplevel', { cwd: sourceDir });
-            const gitRepoRoot = rootDir.trim();
-            // Get all files tracked by Git
-            const { stdout } = await execAsync('git ls-files', { cwd: sourceDir });
-            const allGitFiles = stdout.trim().split('\n').filter(Boolean);
-            // Convert source directory to absolute path
-            const sourceDirAbs = path.resolve(sourceDir);
-            // Calculate source directory's path relative to git root
-            const relativeSourceDir = path.relative(gitRepoRoot, sourceDirAbs);
-            const relativeSourceDirWithSep = relativeSourceDir ? `${relativeSourceDir}${path.sep}` : '';
-            // Filter files to only those within the source directory
-            const gitFiles = allGitFiles
-                .filter(file => {
-                if (!relativeSourceDir)
-                    return true;
-                return file.startsWith(relativeSourceDirWithSep);
-            })
-                .map(file => {
-                if (!relativeSourceDir)
-                    return file;
-                return file.startsWith(relativeSourceDirWithSep)
-                    ? file.slice(relativeSourceDirWithSep.length)
-                    : file;
+            this.files = await performStandardCopy({
+                sourceDir, destDir,
+                files: await this.collectFiles(sourceDir, destDir)
             });
-            // Include essential files even if not tracked by Git
-            const essentialFiles = ['package.json', 'pnpm-lock.yaml'];
-            const files = [...new Set([...gitFiles, ...essentialFiles])];
-            this.files = await performStandardCopy({ sourceDir, destDir, files });
         }
         catch (error) {
             const errorMessage = error instanceof Error
@@ -54,5 +58,8 @@ export default {
                 : String(error);
             throw new Error(`Git copy operation failed: ${errorMessage}`);
         }
+    },
+    async performScan(bouncedDir) {
+        console.log((await this.collectFiles(bouncedDir)).map(_ => `--input ${_}`).join("\n"));
     }
 };

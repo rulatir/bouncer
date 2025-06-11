@@ -1,10 +1,5 @@
-import Arborist from '@npmcli/arborist';
-import packlist from 'npm-packlist';
+import { determineStrategy } from "../strategy/index.mjs";
 export async function scan(destinationDir) {
-    const arborist = new Arborist({ path: destinationDir });
-    const tree = await arborist.loadActual();
-    const files = await packlist(tree);
-    for (const file of files) {
-        console.log(`--input ${destinationDir}/${file}`);
-    }
+    const strategy = await determineStrategy(destinationDir);
+    await strategy.performScan(destinationDir);
 }

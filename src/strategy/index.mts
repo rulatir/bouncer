@@ -10,7 +10,9 @@ export type StrategyKey = 'all' | 'files' | 'git';
 export type Strategy = {
     name: StrategyKey;
     check: (sourceDir: string) => Promise<boolean>;
+    collectFiles: (sourceDir: string, destDir? : string) => Promise<string[]>;
     performBounce: (options: BounceOptions) => Promise<void>;
+    performScan: (bouncedDir: string) => Promise<void>;
     files?: string[];
 };
 

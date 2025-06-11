@@ -9,8 +9,11 @@ export async function readPackageJson(directory: string): Promise<any> {
     return JSON.parse(await fs.readFile(pkgJsonPath, 'utf8'));
 }
 
-export function buildStandardExclusions(sourceDir: string, destDir: string): string[] {
-    return [...STANDARD_EXCLUSIONS, ...excludeNestedTarget(sourceDir, destDir)];
+export function buildStandardExclusions(sourceDir: string, destDir?: string): string[] {
+    return [
+        ...STANDARD_EXCLUSIONS,
+        ...(destDir ? excludeNestedTarget(sourceDir, destDir) : [])
+    ];
 }
 
 export async function resolveMatchingFiles(

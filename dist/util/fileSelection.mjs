@@ -8,7 +8,10 @@ export async function readPackageJson(directory) {
     return JSON.parse(await fs.readFile(pkgJsonPath, 'utf8'));
 }
 export function buildStandardExclusions(sourceDir, destDir) {
-    return [...STANDARD_EXCLUSIONS, ...excludeNestedTarget(sourceDir, destDir)];
+    return [
+        ...STANDARD_EXCLUSIONS,
+        ...(destDir ? excludeNestedTarget(sourceDir, destDir) : [])
+    ];
 }
 export async function resolveMatchingFiles(selectionRules, sourceDir) {
     return await globby(selectionRules, {
