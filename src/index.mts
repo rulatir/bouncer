@@ -6,6 +6,7 @@ import { promisify } from 'node:util';
 import {exec} from 'child_process';
 import { $ as ZX } from 'zx';
 import fs from 'node:fs';
+import adjustReferences from./util/adjustReferences.mjs";
 
 export interface BounceOptions {
     sourceDir: string;
@@ -29,6 +30,7 @@ export async function main({ sourceDir, destDir, strategy: preferredStrategy, wi
 
     const strategy = await determineStrategy(srcAbs, { strategy: preferredStrategy });
     await strategy.performBounce({ sourceDir: srcAbs, destDir: destAbs });
+    await adjustReferences(srcAbs, destAbs);
     await execAsync('pnpm install --prod --frozen-lockfile', { cwd: destAbs });
     if (strategy.files && witness) {
         const sortedFiles = [...strategy.files].sort();
