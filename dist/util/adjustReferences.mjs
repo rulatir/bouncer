@@ -1,6 +1,6 @@
 import path from "node:path";
 import fs from "node:fs/promises";
-import { YAML } from "zx/.";
+import { YAML } from "zx";
 function rebasePath(from, to, specifier) {
     return path.isAbsolute(specifier)
         ? specifier
