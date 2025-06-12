@@ -1,53 +1,56 @@
-import {Command} from 'commander';
-import {determineStrategy, Strategy} from "../strategy/index.mjs";
-import { resolve } from 'path';
+import { Command } from 'commander';
+import { resolve, relative, dirname } from 'path';
 import { execSync } from 'child_process';
-import { build } from 'esbuild';
-import { DependencyGraph } from "esbuild-dependency-graph";
-import {unlinkSync} from "node:fs";
+import { promises as fs } from 'fs';
+import * as rollup from 'rollup';
+import resolvePlugin from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 
 async function prune(projectDir: string, entryFile: string): Promise<void> {
-    const usedFiles = new Set<string>();
     const entry = resolve(projectDir, entryFile);
-    const result = await build({
-        entryPoints: [entry],
-        bundle: true,
-        metafile: true,
-        platform: 'node',
-        format: 'esm',
-        resolveExtensions: ['.mjs', '.js'],
-        mainFields: ['module','main'],
-        absWorkingDir: projectDir,
-        write: false
+    const usedFiles = new Set<string>();
+
+    const bundle = await rollup.rollup({
+        input: entry,
+        onwarn: () => {},
+        plugins: [
+            resolvePlugin({
+                extensions: ['.mjs', '.js'],
+                preferBuiltins: true,
+            }),
+            commonjs(),
+            {
+                name: 'collect-used-files',
+                load(id) {
+                    usedFiles.add(resolve(id));
+                    return null;
+                }
+            }
+        ]
     });
-    if (!result.metafile) {
-        throw new Error('No metafile generated.');
-    }
 
-    const graph = new DependencyGraph({root: projectDir});
-    graph.load(result.metafile);
-
-    const modules = graph.dependenciesOf(entry);
-    const used = new Set(modules.map(m => resolve(m.path)));
-    used.add(entry);
+    await bundle.generate({ format: 'esm', dir: '/dev/null' }); // no output needed
 
     const allFiles = execSync(
         `find '${projectDir}/node_modules' -type f \\( -name '*.js' -o -name '*.mjs' \\)`,
         { encoding: 'utf8' }
-    ).toString().split("\n").filter(Boolean);
+    ).split("\n").filter(Boolean);
+
     for (const file of allFiles) {
-        if (!used.has(resolve(file))) {
-            unlinkSync(file);
-            console.log(`Pruned: ${file}`);
+        const abs = resolve(file);
+        if (!usedFiles.has(abs)) {
+            await fs.unlink(abs);
+            console.log(`Pruned: ${relative(projectDir, abs)}`);
         }
     }
+
     console.log(`Pruning completed in ${projectDir}`);
 }
 
 export function definePruneCommand(program: Command) {
     program
         .command('prune')
-        .description('Trim unused files in node_modules')
+        .description('Trim unused JS in node_modules')
         .option('--path <path>', 'Path to prune (default: current working dir)', process.cwd())
         .action(async (opts) => {
             const pathToPrune = opts.path;

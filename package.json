@@ -1,6 +1,6 @@
 {
   "name": "bouncer",
-  "version": "1.6.4",
+  "version": "1.7.0",
   "description": "",
   "scripts": {
     "test": "node --test dist/tests/**/*.test.mjs",
@@ -27,6 +27,8 @@
   },
   "dependencies": {
     "@npmcli/arborist": "^9.1.1",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
     "@types/npm-packlist": "^7.0.3",
     "@types/npmcli__arborist": "^6.3.0",
     "arborist": "link:@types/@npmcli/arborist",
@@ -37,6 +39,7 @@
     "globby": "^14.1.0",
     "mkdirp": "^3.0.1",
     "npm-packlist": "^10.0.0",
+    "rollup": "^4.43.0",
     "typescript": "^5.8.3",
     "yaml": "^2.8.0",
     "zx": "^8.5.4"
