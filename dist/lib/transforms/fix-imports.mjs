@@ -40,6 +40,9 @@ function needsResolution(specifier) {
     return !extname(specifier) && (specifier.startsWith('./') || specifier.startsWith('../'));
 }
 function resolveExtensionless(specifier, importer) {
+    if (canResolve(specifier, importer)) {
+        return specifier;
+    }
     const mjsSpecifier = specifier + '.mjs';
     if (canResolve(mjsSpecifier, importer)) {
         return mjsSpecifier;

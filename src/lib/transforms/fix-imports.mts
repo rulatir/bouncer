@@ -64,6 +64,9 @@ function needsResolution(specifier: string): boolean {
 }
 
 function resolveExtensionless(specifier: string, importer: string): string {
+    if (canResolve(specifier, importer)) {
+        return specifier;
+    }
     const mjsSpecifier = specifier + '.mjs';
     if (canResolve(mjsSpecifier, importer)) {
         return mjsSpecifier;
