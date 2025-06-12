@@ -6,6 +6,8 @@ import { exec } from 'child_process';
 import { $ as ZX } from 'zx';
 import fs from 'node:fs';
 import { adjustReferences } from '../util/adjustReferences.mjs';
+import process from "node:process";
+import resolvePath from "../util/resolvePath.mjs";
 const execAsync = promisify(exec);
 export async function bounce({ sourceDir, destDir, strategy: preferredStrategy, witness }) {
     console.log(`🔄 Bouncing from: ${sourceDir}`);
@@ -27,4 +29,18 @@ export async function bounce({ sourceDir, destDir, strategy: preferredStrategy, 
         fs.writeFileSync(path.resolve(destAbs, witness), (await child).stdout.toString(), 'utf8');
     }
     console.log(`✅ Bounce completed using strategy "${strategy.name}".`);
+}
+export function defineBounceCommand(program) {
+    program
+        .command('bounce')
+        .description('Bounce a Node project to a self-contained deployable directory')
+        .option('--source <path>', 'Source project directory (default: current working dir)', process.cwd())
+        .option('--dest <path>', 'Destination bounce directory (default: ./bounce)', 'bounce')
+        .option('--strategy <name>', 'Strategy to use (all, files, or git)') // Added strategy option
+        .option('--witness <path>', 'Witness file to create')
+        .action(async (opts) => {
+        const sourceDir = resolvePath(opts.source);
+        const destDir = resolvePath(opts.dest);
+        await bounce({ sourceDir, destDir, strategy: opts.strategy, witness: opts.witness });
+    });
 }

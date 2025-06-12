@@ -1,6 +1,6 @@
 {
   "name": "bouncer",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,10 +16,15 @@
     "bouncer": "dist/cli.mjs"
   },
   "devDependencies": {
+    "@types/babel__generator": "^7.27.0",
+    "@types/babel__traverse": "^7.20.7",
     "@types/node": "^22.15.19",
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@babel/generator": "^7.27.5",
+    "@babel/parser": "^7.27.5",
+    "@babel/traverse": "^7.27.4",
     "@npmcli/arborist": "^9.1.1",
     "@types/npm-packlist": "^7.0.3",
     "@types/npmcli__arborist": "^6.3.0",
