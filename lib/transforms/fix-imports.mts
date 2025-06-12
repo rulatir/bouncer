@@ -1,7 +1,7 @@
 import { extname } from 'path';
-import { execSync } from 'child_process';
 import ts from 'typescript';
 import { TransformContext } from '../transform-harness.mjs';
+import {canResolve} from '../utils/resolve.mjs';
 
 function isSourceFile(node: ts.Node): node is ts.SourceFile {
     return ts.isSourceFile(node);
@@ -78,16 +78,4 @@ function resolveExtensionless(specifier: string, importer: string): string {
     }
 
     return specifier;
-}
-
-function canResolve(specifier: string, importer: string): boolean {
-    try {
-        execSync(
-            `node --input-type=module -e "await import.meta.resolve('${specifier}', '${importer}')"`,
-            { stdio: 'pipe' }
-        );
-        return true;
-    } catch {
-        return false;
-    }
 }

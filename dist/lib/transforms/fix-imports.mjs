@@ -1,6 +1,6 @@
 import { extname } from 'path';
-import { execSync } from 'child_process';
 import ts from 'typescript';
+import { canResolve } from '../utils/resolve.mjs';
 function isSourceFile(node) {
     return ts.isSourceFile(node);
 }
@@ -52,13 +52,4 @@ function resolveExtensionless(specifier, importer) {
         return indexSpecifier;
     }
     return specifier;
-}
-function canResolve(specifier, importer) {
-    try {
-        execSync(`node --input-type=module -e "await import.meta.resolve('${specifier}', '${importer}')"`, { stdio: 'pipe' });
-        return true;
-    }
-    catch {
-        return false;
-    }
 }

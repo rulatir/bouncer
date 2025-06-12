@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'fs';
 import * as ts from 'typescript';
-import { Strategy } from '../strategy/index.mjs';
+import { Strategy } from '../src/strategy/index.mjs';
 
 export interface TransformContext {
     filePath: string;

@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { Command } from 'commander';
-import { applyTransform } from '../lib/transform-harness.mjs';
-import { fixImportsTransform } from '../lib/transforms/fix-imports.mjs';
+import { applyTransform } from '../../lib/transform-harness.mjs';
+import { fixImportsTransform } from '../../lib/transforms/fix-imports.mjs';
 import { determineStrategy } from '../strategy/index.mjs';
 
 interface FixImportsOptions {

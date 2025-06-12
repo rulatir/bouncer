@@ -1,9 +1,11 @@
 {
   "name": "bouncer",
-  "version": "1.5.10",
+  "version": "1.6.0",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test dist/tests/**/*.test.mjs",
+    "test:canresolve": "node --test dist/tests/unit/can-resolve.test.mjs",
+    "test:watch": "node --test --watch dist/tests/**/*.test.mjs",
     "build": "tsc",
     "dev": "tsc --watch",
     "flush": "bash -c '[ -n \"$1\" ] && [ -n \"$2\" ] && pnpm tsc && bumper bump \"$1\" && git add . && git commit -m \"$2\" && git push || echo \"Usage: pnpm flush -- <patch|minor|major> message\"' --",
@@ -29,6 +31,8 @@
     "@types/npmcli__arborist": "^6.3.0",
     "arborist": "link:@types/@npmcli/arborist",
     "commander": "^14.0.0",
+    "esbuild": "^0.25.5",
+    "esbuild-dependency-graph": "^1.2.0",
     "execa": "^9.6.0",
     "globby": "^14.1.0",
     "mkdirp": "^3.0.1",
