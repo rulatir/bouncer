@@ -33,10 +33,19 @@ async function prune(projectDir: string, entryFile: string): Promise<void> {
 
     await bundle.generate({ format: 'esm', dir: '/dev/null' }); // no output needed
 
-    const allFiles = execSync(
+    const findCommands = [
         `find '${projectDir}/node_modules' -type f \\( -name '*.js' -o -name '*.mjs' -o -name '*.ts' \\)`,
-        { encoding: 'utf8' }
-    ).split("\n").filter(Boolean);
+        `find '${projectDir}/node_modules/aws-sdk/apis' -type f \\( -name '*.json' \\)`
+    ]
+
+    const allFiles = [...new Set(
+        findCommands
+            .map(cmd => execSync(cmd, { encoding: 'utf8' })
+            .split("\n")
+            .filter(Boolean)
+            .map(f => resolve(f)))
+            .flat()
+    )];
 
     for (const file of allFiles) {
         const abs = resolve(file);
