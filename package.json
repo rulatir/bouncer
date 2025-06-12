@@ -1,14 +1,14 @@
 {
   "name": "bouncer",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "dev": "tsc --watch",
-    "flush": "bash -c 'pnpm tsc && bumper bump \"$1\" && git add . && git commit -m \"$2\" && git push' --",
-    "patch": "npm run flush -- patch",
-    "minor": "npm run flush -- minor"
+    "flush": "bash -c '[ -n \"$1\" ] && [ -n \"$2\" ] && pnpm tsc && bumper bump \"$1\" && git add . && git commit -m \"$2\" && git push || echo \"Usage: pnpm flush -- <patch|minor|major> message\"' --",
+    "patch": "bash -c '[ -n \"$1\" ] && pnpm tsc && bumper bump patch && git add . && git commit -m \"$1\" && git push || echo \"Usage: pnpm patch -- message\"' --",
+    "minor": "bash -c '[ -n \"$1\" ] && pnpm tsc && bumper bump minor && git add . && git commit -m \"$1\" && git push || echo \"Usage: pnpm minor -- message\"' --"
   },
   "keywords": [],
   "author": "",
