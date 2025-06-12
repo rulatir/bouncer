@@ -1,9 +1,9 @@
 import { extname } from 'path';
 import { execSync } from 'child_process';
-import traverse from '@babel/traverse';
+import * as traverseModule from '@babel/traverse';
 export function fixImportsTransform(context) {
     let modified = false;
-    traverse(context.ast, {
+    traverseModule.default(context.ast, {
         ImportDeclaration(path) {
             const specifier = path.node.source.value;
             if (needsResolution(specifier)) {
