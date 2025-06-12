@@ -12,8 +12,11 @@ async function prune(projectDir: string, entryFile: string): Promise<void> {
     const result = await build({
         entryPoints: [entry],
         bundle: true,
+        metafile: true,
         platform: 'node',
         format: 'esm',
+        resolveExtensions: ['.mjs', '.js'],
+        mainFields: ['module','main'],
         write: false
     });
     if (!result.metafile) {
