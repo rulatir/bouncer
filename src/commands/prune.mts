@@ -34,7 +34,7 @@ async function prune(projectDir: string, entryFile: string): Promise<void> {
     await bundle.generate({ format: 'esm', dir: '/dev/null' }); // no output needed
 
     const allFiles = execSync(
-        `find '${projectDir}/node_modules' -type f \\( -name '*.js' -o -name '*.mjs' \\)`,
+        `find '${projectDir}/node_modules' -type f \\( -name '*.js' -o -name '*.mjs' -o -name '*.ts' \\)`,
         { encoding: 'utf8' }
     ).split("\n").filter(Boolean);
 
