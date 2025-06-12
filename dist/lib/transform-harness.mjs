@@ -1,6 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { parse } from '@babel/parser';
-import generate from '@babel/generator';
+import * as ts from 'typescript';
 export async function applyTransform(options) {
     const { targetDir, strategy, transform, description } = options;
     console.log(`${description} in: ${targetDir}`);
@@ -10,7 +9,7 @@ export async function applyTransform(options) {
         console.log(`Found ${jsFiles.length} JavaScript files to process`);
         let processedCount = 0;
         for (const filePath of jsFiles) {
-            if (await processFile(filePath, transform)) {
+            if (processFile(filePath, transform)) {
                 processedCount++;
             }
         }
@@ -21,31 +20,19 @@ export async function applyTransform(options) {
         process.exit(1);
     }
 }
-function isJavaScriptFile(filePath) {
-    return /\.(js|mjs|ts|jsx|tsx|mts)$/.test(filePath);
+function processFile(filePath, transform) {
+    const code = readFileSync(filePath, 'utf-8');
+    const sourceFile = ts.createSourceFile(filePath, code, ts.ScriptTarget.Latest, true);
+    const context = { filePath, sourceFile };
+    const result = transform(context);
+    if (result.modified) {
+        const printer = ts.createPrinter();
+        const newCode = printer.printFile(result.sourceFile);
+        writeFileSync(filePath, newCode);
+        return true;
+    }
+    return false;
 }
-async function processFile(filePath, transform) {
-    try {
-        const code = readFileSync(filePath, 'utf8');
-        const ast = parse(code, {
-            sourceType: 'module',
-            plugins: ['typescript', 'jsx', 'decorators-legacy']
-        });
-        const context = { filePath, ast };
-        const modified = await transform(context);
-        if (modified) {
-            const output = generate(ast, {
-                retainLines: true,
-                compact: false
-            }, code);
-            writeFileSync(filePath, output.code);
-            console.log(`✓ Transformed: ${filePath}`);
-            return true;
-        }
-        return false;
-    }
-    catch (error) {
-        console.error(`⚠️  Skipped ${filePath}: ${error.message}`);
-        return false;
-    }
+function isJavaScriptFile(filePath) {
+    return /\.(js|mjs|ts|jsx|tsx)$/.test(filePath);
 }

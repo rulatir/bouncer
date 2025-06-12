@@ -1,14 +1,13 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { parse } from '@babel/parser';
-import generate from '@babel/generator';
+import * as ts from 'typescript';
 import { Strategy } from '../strategy/index.mjs';
 
 export interface TransformContext {
     filePath: string;
-    ast: ReturnType<typeof parse>;
+    sourceFile: ts.SourceFile;
 }
 
-export type TransformFunction = (context: TransformContext) => boolean | Promise<boolean>;
+export type TransformFunction = (context: TransformContext) => { modified: boolean; sourceFile: ts.SourceFile };
 
 export interface TransformOptions {
     targetDir: string;
@@ -30,7 +29,7 @@ export async function applyTransform(options: TransformOptions): Promise<void> {
 
         let processedCount = 0;
         for (const filePath of jsFiles) {
-            if (await processFile(filePath, transform)) {
+            if (processFile(filePath, transform)) {
                 processedCount++;
             }
         }
@@ -42,36 +41,23 @@ export async function applyTransform(options: TransformOptions): Promise<void> {
     }
 }
 
-function isJavaScriptFile(filePath: string): boolean {
-    return /\.(js|mjs|ts|jsx|tsx|mts)$/.test(filePath);
+function processFile(filePath: string, transform: TransformFunction): boolean {
+    const code = readFileSync(filePath, 'utf-8');
+    const sourceFile = ts.createSourceFile(filePath, code, ts.ScriptTarget.Latest, true);
+
+    const context: TransformContext = { filePath, sourceFile };
+    const result = transform(context);
+
+    if (result.modified) {
+        const printer = ts.createPrinter();
+        const newCode = printer.printFile(result.sourceFile);
+        writeFileSync(filePath, newCode);
+        return true;
+    }
+
+    return false;
 }
 
-async function processFile(filePath: string, transform: TransformFunction): Promise<boolean> {
-    try {
-        const code = readFileSync(filePath, 'utf8');
-
-        const ast = parse(code, {
-            sourceType: 'module',
-            plugins: ['typescript', 'jsx', 'decorators-legacy']
-        });
-
-        const context: TransformContext = { filePath, ast };
-        const modified = await transform(context);
-
-        if (modified) {
-            const output = generate(ast, {
-                retainLines: true,
-                compact: false
-            }, code);
-
-            writeFileSync(filePath, output.code);
-            console.log(`✓ Transformed: ${filePath}`);
-            return true;
-        }
-
-        return false;
-    } catch (error) {
-        console.error(`⚠️  Skipped ${filePath}: ${(error as Error).message}`);
-        return false;
-    }
+function isJavaScriptFile(filePath: string): boolean {
+    return /\.(js|mjs|ts|jsx|tsx)$/.test(filePath);
 }

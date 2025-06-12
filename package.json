@@ -1,6 +1,6 @@
 {
   "name": "bouncer",
-  "version": "1.5.7",
+  "version": "1.5.8",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -21,14 +21,9 @@
   "devDependencies": {
     "@babel/types": "^7.27.6",
     "@types/babel__generator": "^7.27.0",
-    "@types/babel__traverse": "^7.20.7",
-    "@types/node": "^22.15.19",
-    "typescript": "^5.8.3"
+    "@types/node": "^22.15.19"
   },
   "dependencies": {
-    "@babel/generator": "^7.27.5",
-    "@babel/parser": "^7.27.5",
-    "@babel/traverse": "^7.27.4",
     "@npmcli/arborist": "^9.1.1",
     "@types/npm-packlist": "^7.0.3",
     "@types/npmcli__arborist": "^6.3.0",
@@ -38,6 +33,7 @@
     "globby": "^14.1.0",
     "mkdirp": "^3.0.1",
     "npm-packlist": "^10.0.0",
+    "typescript": "^5.8.3",
     "yaml": "^2.8.0",
     "zx": "^8.5.4"
   }
