@@ -1,6 +1,6 @@
 {
   "name": "bouncer",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "",
   "scripts": {
     "test": "node --test dist/tests/**/*.test.mjs",
@@ -28,6 +28,7 @@
   "dependencies": {
     "@npmcli/arborist": "^9.1.1",
     "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@types/npm-packlist": "^7.0.3",
     "@types/npmcli__arborist": "^6.3.0",

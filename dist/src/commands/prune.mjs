@@ -4,6 +4,7 @@ import { promises as fs } from 'fs';
 import * as rollup from 'rollup';
 import resolvePlugin from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import json from "@rollup/plugin-json";
 async function prune(projectDir, entryFile) {
     const entry = resolve(projectDir, entryFile);
     const usedFiles = new Set();
@@ -16,6 +17,7 @@ async function prune(projectDir, entryFile) {
                 preferBuiltins: true,
             }),
             commonjs(),
+            json(),
             {
                 name: 'collect-used-files',
                 load(id) {
