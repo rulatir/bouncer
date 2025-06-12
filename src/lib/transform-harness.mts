@@ -1,12 +1,12 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { parse } from '@babel/parser';
-import traverse, { Node } from '@babel/traverse';
-import generate from '@babel/generator';
+import type { File } from '@babel/types';
 import { Strategy } from '../strategy/index.mjs';
+import * as generate from "@babel/generator";
 
 export interface TransformContext {
     filePath: string;
-    ast: Node;
+    ast: File;
 }
 
 export type TransformFunction = (context: TransformContext) => boolean;
@@ -60,7 +60,7 @@ function processFile(filePath: string, transform: TransformFunction): boolean {
         const modified = transform(context);
 
         if (modified) {
-            const output = generate(ast, {
+            const output = generate.default(ast, {
                 retainLines: true,
                 compact: false
             }, code);

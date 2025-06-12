@@ -1,11 +1,14 @@
 {
   "name": "bouncer",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "flush": "bash -c 'pnpm tsc && bumper bump \"$1\" && git add . && git commit -m \"$2\" && git push' --",
+    "patch": "npm run flush -- patch",
+    "minor": "npm run flush -- minor"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +19,7 @@
     "bouncer": "dist/cli.mjs"
   },
   "devDependencies": {
+    "@babel/types": "^7.27.6",
     "@types/babel__generator": "^7.27.0",
     "@types/babel__traverse": "^7.20.7",
     "@types/node": "^22.15.19",

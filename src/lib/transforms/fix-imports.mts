@@ -1,12 +1,12 @@
 import { extname } from 'path';
-import traverse from '@babel/traverse';
+import * as traverse from '@babel/traverse';
 import { execSync } from 'child_process';
 import { TransformContext } from '../transform-harness.mjs';
 
 export function fixImportsTransform(context: TransformContext): boolean {
     let modified = false;
 
-    traverse(context.ast, {
+    traverse.default(context.ast, {
         ImportDeclaration(path) {
             const specifier = path.node.source.value;
             if (needsResolution(specifier)) {

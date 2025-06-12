@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { parse } from '@babel/parser';
-import generate from '@babel/generator';
+import * as generate from "@babel/generator";
 export async function applyTransform(options) {
     const { targetDir, strategy, transform, description } = options;
     console.log(`${description} in: ${targetDir}`);
@@ -34,7 +34,7 @@ function processFile(filePath, transform) {
         const context = { filePath, ast };
         const modified = transform(context);
         if (modified) {
-            const output = generate(ast, {
+            const output = generate.default(ast, {
                 retainLines: true,
                 compact: false
             }, code);
