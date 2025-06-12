@@ -14,6 +14,7 @@ async function prune(projectDir, entryFile) {
         format: 'esm',
         resolveExtensions: ['.mjs', '.js'],
         mainFields: ['module', 'main'],
+        absWorkingDir: projectDir,
         write: false
     });
     if (!result.metafile) {
@@ -24,7 +25,7 @@ async function prune(projectDir, entryFile) {
     const modules = graph.dependenciesOf(entry);
     const used = new Set(modules.map(m => resolve(m.path)));
     used.add(entry);
-    const allFiles = execSync(`find ${projectDir}/node_modules -type f \\(-name "*.js" -o -name "*.mjs"\\)`, { encoding: 'utf8' }).toString().split("\n").filter(Boolean);
+    const allFiles = execSync(`find '${projectDir}/node_modules' -type f \\( -name '*.js' -o -name '*.mjs' \\)`, { encoding: 'utf8' }).toString().split("\n").filter(Boolean);
     for (const file of allFiles) {
         if (!used.has(resolve(file))) {
             unlinkSync(file);
