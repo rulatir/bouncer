@@ -1,7 +1,8 @@
 import { extname } from 'path';
-import { default as traverse } from '@babel/traverse';
+import traverse from '@babel/traverse';
 import { execSync } from 'child_process';
 import { TransformContext } from '../transform-harness.mjs';
+
 
 export function fixImportsTransform(context: TransformContext): boolean {
     let modified = false;

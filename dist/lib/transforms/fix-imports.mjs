@@ -1,5 +1,5 @@
 import { extname } from 'path';
-import { default as traverse } from '@babel/traverse';
+import traverse from '@babel/traverse';
 import { execSync } from 'child_process';
 export function fixImportsTransform(context) {
     let modified = false;
