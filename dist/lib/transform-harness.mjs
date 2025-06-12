@@ -29,6 +29,7 @@ function processFile(filePath, transform) {
         const printer = ts.createPrinter();
         const newCode = printer.printFile(result.sourceFile);
         writeFileSync(filePath, newCode);
+        console.log(`📝 Rewritten: ${filePath}`);
         return true;
     }
     return false;
