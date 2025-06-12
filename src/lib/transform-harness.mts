@@ -1,15 +1,14 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { parse } from '@babel/parser';
-import type { File } from '@babel/types';
+import generate from '@babel/generator';
 import { Strategy } from '../strategy/index.mjs';
-import * as generate from "@babel/generator";
 
 export interface TransformContext {
     filePath: string;
-    ast: File;
+    ast: ReturnType<typeof parse>;
 }
 
-export type TransformFunction = (context: TransformContext) => boolean;
+export type TransformFunction = (context: TransformContext) => boolean | Promise<boolean>;
 
 export interface TransformOptions {
     targetDir: string;
@@ -31,7 +30,7 @@ export async function applyTransform(options: TransformOptions): Promise<void> {
 
         let processedCount = 0;
         for (const filePath of jsFiles) {
-            if (processFile(filePath, transform)) {
+            if (await processFile(filePath, transform)) {
                 processedCount++;
             }
         }
@@ -47,7 +46,7 @@ function isJavaScriptFile(filePath: string): boolean {
     return /\.(js|mjs|ts|jsx|tsx|mts)$/.test(filePath);
 }
 
-function processFile(filePath: string, transform: TransformFunction): boolean {
+async function processFile(filePath: string, transform: TransformFunction): Promise<boolean> {
     try {
         const code = readFileSync(filePath, 'utf8');
 
@@ -57,10 +56,10 @@ function processFile(filePath: string, transform: TransformFunction): boolean {
         });
 
         const context: TransformContext = { filePath, ast };
-        const modified = transform(context);
+        const modified = await transform(context);
 
         if (modified) {
-            const output = generate.default(ast, {
+            const output = generate(ast, {
                 retainLines: true,
                 compact: false
             }, code);

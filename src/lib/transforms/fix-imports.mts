@@ -1,10 +1,10 @@
 import { extname } from 'path';
-import traverse from '@babel/traverse';
 import { execSync } from 'child_process';
 import { TransformContext } from '../transform-harness.mjs';
 
+export async function fixImportsTransform(context: TransformContext): Promise<boolean> {
+    const { default: traverse } = await import('@babel/traverse');
 
-export function fixImportsTransform(context: TransformContext): boolean {
     let modified = false;
 
     traverse(context.ast, {

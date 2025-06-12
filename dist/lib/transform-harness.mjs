@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { parse } from '@babel/parser';
-import * as generate from "@babel/generator";
+import generate from '@babel/generator';
 export async function applyTransform(options) {
     const { targetDir, strategy, transform, description } = options;
     console.log(`${description} in: ${targetDir}`);
@@ -10,7 +10,7 @@ export async function applyTransform(options) {
         console.log(`Found ${jsFiles.length} JavaScript files to process`);
         let processedCount = 0;
         for (const filePath of jsFiles) {
-            if (processFile(filePath, transform)) {
+            if (await processFile(filePath, transform)) {
                 processedCount++;
             }
         }
@@ -24,7 +24,7 @@ export async function applyTransform(options) {
 function isJavaScriptFile(filePath) {
     return /\.(js|mjs|ts|jsx|tsx|mts)$/.test(filePath);
 }
-function processFile(filePath, transform) {
+async function processFile(filePath, transform) {
     try {
         const code = readFileSync(filePath, 'utf8');
         const ast = parse(code, {
@@ -32,9 +32,9 @@ function processFile(filePath, transform) {
             plugins: ['typescript', 'jsx', 'decorators-legacy']
         });
         const context = { filePath, ast };
-        const modified = transform(context);
+        const modified = await transform(context);
         if (modified) {
-            const output = generate.default(ast, {
+            const output = generate(ast, {
                 retainLines: true,
                 compact: false
             }, code);

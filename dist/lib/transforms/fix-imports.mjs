@@ -1,7 +1,7 @@
 import { extname } from 'path';
-import traverse from '@babel/traverse';
 import { execSync } from 'child_process';
-export function fixImportsTransform(context) {
+export async function fixImportsTransform(context) {
+    const { default: traverse } = await import('@babel/traverse');
     let modified = false;
     traverse(context.ast, {
         ImportDeclaration(path) {
