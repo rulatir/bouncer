@@ -42,24 +42,24 @@ async function strip(projectDir, entryFile, bouncedWitness, witness) {
         const abs = resolve(file);
         if (!usedFiles.has(abs)) {
             await fs.unlink(abs);
-            console.log(`Pruned: ${relative(projectDir, abs)}`);
+            console.log(`Stripped: ${relative(projectDir, abs)}`);
         }
     }
     // Create witness file
     const witnessPath = resolve(projectDir, witness);
     const bouncedWitnessPath = resolve(projectDir, bouncedWitness);
     await fs.writeFile(witnessPath, await fs.readFile(bouncedWitnessPath, { encoding: 'utf-8' }), 'utf8');
-    console.log(`Pruning completed in ${projectDir}`);
+    console.log(`Stripping completed in ${projectDir}`);
 }
 export function defineStripCommand(program) {
     program
-        .command('prune')
+        .command('strip')
         .description('Trim unused JS in node_modules')
         .option('-d, --dir <path>', 'Bounced project root (default: current working dir)', process.cwd())
         .option('-b, --bounced <path>', 'Bounce stage witness (default: ./bounced)', 'bounced')
         .option('-w, --witness <path>', 'Witness file to create (default: ./stripped)', 'stripped')
         .action(async (opts) => {
-        const pathToPrune = opts.path;
-        await strip(pathToPrune, 'index.mjs', opts.bounced, opts.witness);
+        const pathToStrip = opts.path;
+        await strip(pathToStrip, 'index.mjs', opts.bounced, opts.witness);
     });
 }
