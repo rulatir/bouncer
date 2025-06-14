@@ -39,8 +39,8 @@ export function defineBounceCommand(program) {
         .option('-s, --strategy <name>', 'Strategy to use (all, files, or git)') // Added strategy option
         .option('-w, --witness <path>', 'Witness file to create', 'bounced')
         .action(async (opts) => {
-        const sourceDir = resolvePath(opts.source);
-        const destDir = resolvePath(opts.dest);
+        const sourceDir = resolvePath(opts.dir);
+        const destDir = resolvePath(opts.outputDir);
         await bounce({ sourceDir, destDir, strategy: opts.strategy, witness: opts.witness });
     });
 }
