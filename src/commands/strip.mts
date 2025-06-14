@@ -71,7 +71,7 @@ export function defineStripCommand(program: Command) {
         .option('-b, --bounced <path>', 'Bounce stage witness (default: ./bounced)', 'bounced')
         .option('-w, --witness <path>', 'Witness file to create (default: ./stripped)', 'stripped')
         .action(async (opts) => {
-            const pathToStrip = opts.path;
+            const pathToStrip = opts.dir;
             await strip(pathToStrip, 'index.mjs', opts.bounced, opts.witness);
         });
 }
