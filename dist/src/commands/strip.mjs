@@ -1,19 +1,16 @@
-import { Command } from 'commander';
-import { resolve, relative, dirname } from 'path';
+import { resolve, relative } from 'path';
 import { execSync } from 'child_process';
 import { promises as fs } from 'fs';
 import * as rollup from 'rollup';
 import resolvePlugin from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import json from "@rollup/plugin-json";
-
-async function prune(projectDir: string, entryFile: string): Promise<void> {
+async function strip(projectDir, entryFile, bouncedWitness, witness) {
     const entry = resolve(projectDir, entryFile);
-    const usedFiles = new Set<string>();
-
+    const usedFiles = new Set();
     const bundle = await rollup.rollup({
         input: entry,
-        onwarn: () => {},
+        onwarn: () => { },
         plugins: [
             resolvePlugin({
                 extensions: ['.mjs', '.js'],
@@ -30,23 +27,17 @@ async function prune(projectDir: string, entryFile: string): Promise<void> {
             }
         ]
     });
-
     await bundle.generate({ format: 'esm', dir: '/dev/null' }); // no output needed
-
     const findCommands = [
         `find '${projectDir}/node_modules' -type f \\( -name '*.js' -o -name '*.mjs' -o -name '*.ts' \\)`,
         `find '${projectDir}/node_modules/aws-sdk/apis' -type f \\( -name '*.json' \\)`
-    ]
-
-    const allFiles = [...new Set(
-        findCommands
+    ];
+    const allFiles = [...new Set(findCommands
             .map(cmd => execSync(cmd, { encoding: 'utf8' })
             .split("\n")
             .filter(Boolean)
             .map(f => resolve(f)))
-            .flat()
-    )];
-
+            .flat())];
     for (const file of allFiles) {
         const abs = resolve(file);
         if (!usedFiles.has(abs)) {
@@ -54,17 +45,21 @@ async function prune(projectDir: string, entryFile: string): Promise<void> {
             console.log(`Pruned: ${relative(projectDir, abs)}`);
         }
     }
-
+    // Create witness file
+    const witnessPath = resolve(projectDir, witness);
+    const bouncedWitnessPath = resolve(projectDir, bouncedWitness);
+    await fs.writeFile(witnessPath, await fs.readFile(bouncedWitnessPath, { encoding: 'utf-8' }), 'utf8');
     console.log(`Pruning completed in ${projectDir}`);
 }
-
-export function definePruneCommand(program: Command) {
+export function defineStripCommand(program) {
     program
         .command('prune')
         .description('Trim unused JS in node_modules')
-        .option('--path <path>', 'Path to prune (default: current working dir)', process.cwd())
+        .option('-d, --dir <path>', 'Bounced project root (default: current working dir)', process.cwd())
+        .option('-b, --bounced <path>', 'Bounce stage witness (default: ./bounced)', 'bounced')
+        .option('-w, --witness <path>', 'Witness file to create (default: ./stripped)', 'stripped')
         .action(async (opts) => {
-            const pathToPrune = opts.path;
-            await prune(pathToPrune, 'index.mjs');
-        });
+        const pathToPrune = opts.path;
+        await strip(pathToPrune, 'index.mjs', opts.bounced, opts.witness);
+    });
 }

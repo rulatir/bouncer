@@ -51,10 +51,10 @@ export function defineBounceCommand(program: Command): void {
     program
         .command('bounce')
         .description('Bounce a Node project to a self-contained deployable directory')
-        .option('--source <path>', 'Source project directory (default: current working dir)', process.cwd())
-        .option('--dest <path>', 'Destination bounce directory (default: ./bounce)', 'bounce')
-        .option('--strategy <name>', 'Strategy to use (all, files, or git)') // Added strategy option
-        .option('--witness <path>', 'Witness file to create')
+        .option('-d, --dir <path>', 'Source project directory (default: current working dir)', process.cwd())
+        .option('-o, --output-dir <path>', 'Destination bounce directory (default: ./bounce)', 'bounce')
+        .option('-s, --strategy <name>', 'Strategy to use (all, files, or git)') // Added strategy option
+        .option('-w, --witness <path>', 'Witness file to create')
         .action(async (opts) => {
             const sourceDir = resolvePath(opts.source);
             const destDir = resolvePath(opts.dest);

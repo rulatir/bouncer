@@ -6,7 +6,7 @@ import {bounce, defineBounceCommand} from './commands/bounce.mjs';
 import {defineScanCommand, scan} from './commands/scan.mjs';
 import resolvePath from './util/resolvePath.mjs';
 import { defineFixImportsCommand } from './commands/fix-imports.mjs';
-import { definePruneCommand } from './commands/prune.mjs';
+import { defineStripCommand } from './commands/strip.mjs';
 
 const program = new Command();
 
@@ -18,7 +18,7 @@ program
     defineBounceCommand,
     defineScanCommand,
     defineFixImportsCommand,
-    definePruneCommand
+    defineStripCommand
 
 ].forEach(def => def(program));
 
