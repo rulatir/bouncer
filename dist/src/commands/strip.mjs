@@ -15,6 +15,7 @@ async function strip(projectDir, entryFile, bouncedWitness, witness) {
             resolvePlugin({
                 extensions: ['.mjs', '.js'],
                 preferBuiltins: true,
+                exportConditions: ['node']
             }),
             commonjs(),
             json(),

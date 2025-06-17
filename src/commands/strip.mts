@@ -18,6 +18,7 @@ async function strip(projectDir: string, entryFile: string, bouncedWitness: stri
             resolvePlugin({
                 extensions: ['.mjs', '.js'],
                 preferBuiltins: true,
+                exportConditions: ['node']
             }),
             commonjs(),
             json(),
