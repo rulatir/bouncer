@@ -26,7 +26,7 @@ async function sanitizePnpmMetadata(projectDir) {
     const candidates = [
         {
             filename: resolve(projectDir, 'node_modules', '.modules.yaml'),
-            patch: { packageManager: 'pnpm', prunedAt: FIXED_PRUNED_AT },
+            patch: { packageManager: 'pnpm', prunedAt: FIXED_PRUNED_AT, storeDir: FIXED_STORE_DIR },
             ...typeYaml
         },
         {
