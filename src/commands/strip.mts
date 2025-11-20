@@ -14,6 +14,7 @@ const FIXED_DATE_ISO = '2025-11-20T17:00:00Z';
 const FIXED_DATE = new Date(FIXED_DATE_ISO);
 const FIXED_PRUNED_AT = FIXED_DATE.toUTCString(); // e.g. "Thu, 20 Nov 2025 17:00:00 GMT"
 const FIXED_LAST_VALIDATED_MS = FIXED_DATE.getTime(); // epoch ms
+const FIXED_STORE_DIR = '/completely/fake/path/store/v10';
 
 // New: helper to sanitize pnpm metadata files
 async function sanitizePnpmMetadata(projectDir: string): Promise<void> {
