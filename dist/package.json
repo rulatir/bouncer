@@ -1,0 +1,41 @@
+{
+    "name": "bouncer",
+    "version": "1.11.4",
+    "description": "",
+    "scripts": {
+        "test": "node --test dist/tests/**/*.test.mjs",
+        "test:canresolve": "node --test dist/tests/unit/can-resolve.test.mjs",
+        "test:watch": "node --test --watch dist/tests/**/*.test.mjs",
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "flush": "bash -c '[ -n \"$1\" ] && [ -n \"$2\" ] && pnpm tsc && bumper bump \"$1\" && git add . && git commit -m \"$2\" && git push || echo \"Usage: pnpm flush -- <patch|minor|major> message\"' --",
+        "patch": "bash -c '[ -n \"$1\" ] && pnpm tsc && bumper bump patch && git add . && git commit -m \"$1\" && git push || echo \"Usage: pnpm patch -- message\"' --",
+        "minor": "bash -c '[ -n \"$1\" ] && pnpm tsc && bumper bump minor && git add . && git commit -m \"$1\" && git push || echo \"Usage: pnpm minor -- message\"' --"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "packageManager": "pnpm@10.11.0",
+    "type": "module",
+    "bin": {
+        "bouncer": "dist/src/cli.mjs"
+    },
+    "devDependencies": {
+        "@babel/types": "^7.27.6",
+        "@types/babel__generator": "^7.27.0",
+        "@types/node": "^22.15.19"
+    },
+    "dependencies": {
+        "@rollup/plugin-commonjs": "^28.0.3",
+        "@rollup/plugin-json": "^6.1.0",
+        "@rollup/plugin-node-resolve": "^16.0.1",
+        "commander": "^14.0.0",
+        "execa": "^9.6.0",
+        "globby": "^14.1.0",
+        "mkdirp": "^3.0.1",
+        "rollup": "^4.43.0",
+        "typescript": "^5.8.3",
+        "yaml": "^2.8.0",
+        "zx": "^8.5.4"
+    }
+}

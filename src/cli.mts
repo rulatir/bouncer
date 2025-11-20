@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import path from 'node:path';
 import process from 'node:process';
-import {bounce, defineBounceCommand} from './commands/bounce.mjs';
-import {defineScanCommand, scan} from './commands/scan.mjs';
-import resolvePath from './util/resolvePath.mjs';
+import { getBouncerVersion } from './util/packageVersion.mjs'; // Import the generated runtime module (.mjs). Do NOT modify generated .mjs files.
+import { defineBounceCommand } from './commands/bounce.mjs';
+import { defineScanCommand } from './commands/scan.mjs';
 import { defineFixImportsCommand } from './commands/fix-imports.mjs';
 import { defineStripCommand } from './commands/strip.mjs';
 
@@ -12,7 +11,8 @@ const program = new Command();
 
 program
     .name('bouncer')
-    .description('Utility for creating portable node program installations');
+    .description('Utility for creating portable node program installations')
+    .version(getBouncerVersion());
 
 [
     defineBounceCommand,

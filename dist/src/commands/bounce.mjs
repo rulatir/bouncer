@@ -8,6 +8,8 @@ import fs from 'node:fs';
 import { adjustReferences } from '../util/adjustReferences.mjs';
 import process from "node:process";
 import resolvePath from "../util/resolvePath.mjs";
+// Import the generated runtime module (.mjs). Do NOT modify generated .mjs files.
+import { getBouncerVersion } from '../util/packageVersion.mjs';
 const execAsync = promisify(exec);
 export async function bounce({ sourceDir, destDir, strategy: preferredStrategy, witness }) {
     console.log(`🔄 Bouncing from: ${sourceDir}`);
@@ -25,17 +27,7 @@ export async function bounce({ sourceDir, destDir, strategy: preferredStrategy, 
         const sortedFiles = [...strategy.files].sort();
         const child = ZX `md5state - | md5sum -`;
         // Read this package's package.json to get the current bouncer version and use it as a salt
-        let bouncerVersion = 'unknown';
-        try {
-            const pkgPath = new URL('../../package.json', import.meta.url);
-            const pkgJson = fs.readFileSync(pkgPath, 'utf8');
-            const pkg = JSON.parse(pkgJson);
-            if (pkg && pkg.version)
-                bouncerVersion = pkg.version;
-        }
-        catch (e) {
-            // If reading fails, continue with 'unknown' version; hashing still proceeds
-        }
+        const bouncerVersion = getBouncerVersion();
         // Prepend a salt line with the bouncer version so the witness hash is versioned
         child.stdin.write(`bouncer:${bouncerVersion}\n`);
         child.stdin.write(sortedFiles.join('\n') + '\n');

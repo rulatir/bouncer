@@ -6,10 +6,13 @@ import { promisify } from 'node:util';
 import {exec} from 'child_process';
 import { $ as ZX } from 'zx';
 import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { adjustReferences } from '../util/adjustReferences.mjs';
 import { Command } from 'commander';
 import process from "node:process";
 import resolvePath from "../util/resolvePath.mjs";
+// Import the generated runtime module (.mjs). Do NOT modify generated .mjs files.
+import { getBouncerVersion } from '../util/packageVersion.mjs';
 
 export interface BounceOptions {
     sourceDir: string;
@@ -41,15 +44,7 @@ export async function bounce({ sourceDir, destDir, strategy: preferredStrategy, 
         const child = ZX`md5state - | md5sum -`;
 
         // Read this package's package.json to get the current bouncer version and use it as a salt
-        let bouncerVersion = 'unknown';
-        try {
-            const pkgPath = new URL('../../package.json', import.meta.url);
-            const pkgJson = fs.readFileSync(pkgPath, 'utf8');
-            const pkg = JSON.parse(pkgJson);
-            if (pkg && pkg.version) bouncerVersion = pkg.version;
-        } catch (e) {
-            // If reading fails, continue with 'unknown' version; hashing still proceeds
-        }
+        const bouncerVersion = getBouncerVersion();
 
         // Prepend a salt line with the bouncer version so the witness hash is versioned
         child.stdin.write(`bouncer:${bouncerVersion}\n`);
