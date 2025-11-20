@@ -1,4 +1,4 @@
-import pkg from '../../package.json' assert { type: 'json' };
+import pkg from '../../package.json' with { type: 'json' };
 
 /**
  * Return the package.json version via static JSON import.

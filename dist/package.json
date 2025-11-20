@@ -1,6 +1,6 @@
 {
     "name": "bouncer",
-    "version": "1.11.4",
+    "version": "1.11.5",
     "description": "",
     "scripts": {
         "test": "node --test dist/tests/**/*.test.mjs",
