@@ -24,6 +24,20 @@ export async function bounce({ sourceDir, destDir, strategy: preferredStrategy, 
     if (strategy.files && witness) {
         const sortedFiles = [...strategy.files].sort();
         const child = ZX `md5state - | md5sum -`;
+        // Read this package's package.json to get the current bouncer version and use it as a salt
+        let bouncerVersion = 'unknown';
+        try {
+            const pkgPath = new URL('../../package.json', import.meta.url);
+            const pkgJson = fs.readFileSync(pkgPath, 'utf8');
+            const pkg = JSON.parse(pkgJson);
+            if (pkg && pkg.version)
+                bouncerVersion = pkg.version;
+        }
+        catch (e) {
+            // If reading fails, continue with 'unknown' version; hashing still proceeds
+        }
+        // Prepend a salt line with the bouncer version so the witness hash is versioned
+        child.stdin.write(`bouncer:${bouncerVersion}\n`);
         child.stdin.write(sortedFiles.join('\n') + '\n');
         child.stdin.end();
         fs.writeFileSync(path.resolve(destAbs, witness), (await child).stdout.toString(), 'utf8');
